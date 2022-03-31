@@ -12,7 +12,7 @@ C11 library for comfy logging
  - [ ] Custom Loggers
  - [ ] Thread-safe
  - [ ] Non-blocking (atomic queue?)
-
+ - [ ] Use atexit(??)
 
 
 
