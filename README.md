@@ -13,6 +13,7 @@ C11 library for comfy logging
  - [ ] Thread-safe
  - [ ] Non-blocking (atomic queue?)
  - [ ] Use atexit(??)
-
+ - [ ] Colors
+ - [ ] Max line width
 
 
