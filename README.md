@@ -5,6 +5,10 @@ C11 library for comfy logging
 ### TODOs
 
  - [ ] Basic single-threaded logging
+   - [ ] Local files
+   - [ ] Terminal
+   - [ ] Syslogd
+   - [ ] Custom
  - [ ] Custom format strings
  - [ ] Custom format entries
  - [ ] Stable API (and ABI?)
@@ -15,5 +19,6 @@ C11 library for comfy logging
  - [ ] Use atexit(??)
  - [ ] Colors
  - [ ] Max line width
+ - [ ] Prefixes
 
 

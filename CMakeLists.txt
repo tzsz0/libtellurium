@@ -18,4 +18,12 @@ target_include_directories(tellurium PUBLIC include)
 target_include_directories(tellurium PRIVATE src)
 
 
+add_subdirectory(contrib/safestringlib)
+add_subdirectory(contrib/libtermcolor)
+
+
+target_link_libraries(tellurium PRIVATE safestring_shared)
+target_link_libraries(tellurium PRIVATE termcolors)
+
+
 
