@@ -1,0 +1,6 @@
+[submodule "contrib/libtermcolor"]
+	path = contrib/libtermcolor
+	url = https://github.com/tzsz0/libtermcolor
+[submodule "contrib/safestringlib"]
+	path = contrib/safestringlib
+	url = https://github.com/intel/safestringlib
