@@ -32,6 +32,12 @@ struct logger {
 
     mtx_t lock;
 
+    struct {
+        /* double linked list */
+        struct logger * * loggers;
+        size_t num;
+    } parents, children;
+
     struct logger_opts opts;
 
     struct {

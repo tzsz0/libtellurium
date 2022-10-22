@@ -144,6 +144,8 @@ logger_close(logger_t * const logger)
     free(logger->identifier);
     mtx_destroy(&logger->lock);
 
+    /* TODO remove connection with children and parents */
+
     logger_remove(logger);
 
     free(logger);
@@ -198,6 +200,32 @@ logger_is_prefix(logger_t const parent[const static 1],
     return false;
 }
 
+static bool
+logger_link(logger_t * const child, logger_t * const parent)
+{
+    /* TODO move increments */
+    logger_t * * newparentslist = realloc(child->parents.loggers, child->parents.num++ * sizeof *newparentslist);
+    logger_t * * newchildrenlist = realloc(parent->children.loggers, parent->children.num++ * sizeof *newchildrenlist);
+
+    if(newparentslist) {
+        child->parents.loggers = newparentslist;
+    }
+    if(newchildrenlist) {
+        parent->children.loggers = newchildrenlist;
+    }
+
+
+    if(newparentslist && newchildrenlist) {
+        
+        newparentslist[child->parents.num - 1] = parent;
+        newchildrenlist[parent->children.num - 1] = child;
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
 
 
 logger_t *
@@ -223,6 +251,11 @@ logger_vwrite(logger_t * const logger, enum logger_level level, char const * con
 {
 
     char * * substr = split_line_at(msg, logger->opts.linewidth);
+
+    /* broadcast all messages to all parent loggers */
+    for(size_t i = 0; i < logger->parents.num; i++) {
+        logger_vwrite(logger->parents.loggers + i, level, msg, args);
+    }
     
 }
 
