@@ -73,6 +73,7 @@ static void
 logger_init(logger_t * restrict const logger, size_t id_length, char const id[const id_length])
 {
     /* TODO use safe version */
+    /* make sure this is freed */
     logger->identifier = calloc(id_length + 1, sizeof(char));
     if(logger->identifier != NULL) {
         strcpy(logger->identifier, id);
@@ -166,6 +167,7 @@ logger_get(char const * const id, logger_opts_t const * const opts)
         if(ret != NULL) {
             logger_init(ret, 0, id);
             /* TODO use opts */
+            memcpy(&ret->opts, opts, sizeof ret->opts);
         }
     }
     mtx_unlock(&loggers_lock);
@@ -214,6 +216,8 @@ logger_write(logger_t * const logger, enum logger_level level, char const * cons
 void
 logger_write(logger_t * const logger, enum logger_level level, char const * const msg, va_list args)
 {
+
+    char const * const * substr = split_line_at(msg, logger->opts.linewidth);
     
 }
 
