@@ -22,3 +22,17 @@ C11 library for comfy logging
  - [ ] Prefixes
 
 
+## Easy to use and robust API
+
+
+```c
+logger_t * logger = logger_get("myapp", NULL);
+logger_info(logger, "I'd like to interject for a moment...");
+...
+logger_close(logger);
+or
+logger_close_all();
+```
+
+
+
