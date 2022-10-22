@@ -203,9 +203,8 @@ logger_is_prefix(logger_t const parent[const static 1],
 static bool
 logger_link(logger_t * const child, logger_t * const parent)
 {
-    /* TODO move increments */
-    logger_t * * newparentslist = realloc(child->parents.loggers, child->parents.num++ * sizeof *newparentslist);
-    logger_t * * newchildrenlist = realloc(parent->children.loggers, parent->children.num++ * sizeof *newchildrenlist);
+    logger_t * * newparentslist = realloc(child->parents.loggers, (child->parents.num + 1) * sizeof *newparentslist);
+    logger_t * * newchildrenlist = realloc(parent->children.loggers, (parent->children.num + 1) * sizeof *newchildrenlist);
 
     if(newparentslist) {
         child->parents.loggers = newparentslist;
@@ -217,8 +216,8 @@ logger_link(logger_t * const child, logger_t * const parent)
 
     if(newparentslist && newchildrenlist) {
         
-        newparentslist[child->parents.num - 1] = parent;
-        newchildrenlist[parent->children.num - 1] = child;
+        newparentslist[child->parents.num++] = parent;
+        newchildrenlist[parent->children.num++] = child;
 
         return true;
     } else {
