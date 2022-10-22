@@ -218,5 +218,29 @@ logger_write(logger_t * const logger, enum logger_level level, char const * cons
 }
 
 
+static
+char const * const
+split_line_at(char const * const line, size_t maxlength)
+{
+    /* TODO check this for string correctness */
+    size_t numsubstr = 0; /* number of maxlength-sized strings we need to split line */
+    size_t lenstr = strlen(line);
+
+    while(numsubstr * maxlength < lenstr)
+        numsubstr++;
+
+    char const * const * substr = calloc(numsubstr, sizeof *substr);
+
+    if(substr == NULL)
+        return NULL;
+
+    for(size_t i = 0; i < numsubstr; i++) {
+        /* TODO use safe version */
+        substr[i] = calloc(maxlength + 1, sizeof *substr[i]);
+        strncpy(substr[i], line + i * maxlength, maxlength);
+    }
+
+    return substr;
+}
 
 
