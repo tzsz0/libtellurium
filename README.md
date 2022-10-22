@@ -20,6 +20,8 @@ C11 library for comfy logging
  - [ ] Colors
  - [ ] Max line width
  - [ ] Prefixes
+ - [ ] Nested Loggers
+ - [ ] Pretty printing for basic stuff (let's see how this goes)
 
 
 ## Easy to use and robust API
