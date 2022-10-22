@@ -67,8 +67,7 @@ extern bool         logger_add_output(logger_t * const, logger_output_t const);
 extern void         logger_write(logger_t * const, enum logger_level, char const * const, ...);
 
 
-extern bool         logger_vwrite(logger_t * const, enum logger_level, va_list);
-
+extern void         logger_vwrite(logger_t * const, enum logger_level, char const * const,  va_list);
 
 extern void         logger_info(logger_t * const, char const * const, ...);
 
@@ -92,6 +91,5 @@ extern void         logger_set_default_opts(logger_opts_t const [const static 1]
 
 
 extern size_t       logger_num_targets(logger_t const * const);
-
 
 

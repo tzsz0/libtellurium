@@ -42,6 +42,11 @@ static logger_t * *     loggers     = NULL;
 static mtx_t            loggers_lock;
 static once_flag        co_flag = ONCE_FLAG_INIT;
 
+
+
+static char * *     split_line_at(char const * const, size_t);
+
+
 static logger_opts_t defaults = {
     /* TODO */
     .linewidth = 80,
@@ -214,16 +219,16 @@ logger_write(logger_t * const logger, enum logger_level level, char const * cons
 }
 
 void
-logger_write(logger_t * const logger, enum logger_level level, char const * const msg, va_list args)
+logger_vwrite(logger_t * const logger, enum logger_level level, char const * const msg, va_list args)
 {
 
-    char const * const * substr = split_line_at(msg, logger->opts.linewidth);
+    char * * substr = split_line_at(msg, logger->opts.linewidth);
     
 }
 
 
 static
-char const * const
+char * *
 split_line_at(char const * const line, size_t maxlength)
 {
     /* TODO check this for string correctness */
@@ -233,7 +238,7 @@ split_line_at(char const * const line, size_t maxlength)
     while(numsubstr * maxlength < lenstr)
         numsubstr++;
 
-    char const * const * substr = calloc(numsubstr, sizeof *substr);
+    char * * substr = calloc(numsubstr, sizeof *substr);
 
     if(substr == NULL)
         return NULL;
