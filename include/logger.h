@@ -5,7 +5,6 @@
 #include<stdbool.h>
 #include<stdlib.h>
 #include<stdatomic.h>
-#include<logger/logger.h>
 
 
 enum logger_level {
@@ -18,18 +17,25 @@ enum logger_level {
 };
 
 
+typedef struct logger logger_t;
+typedef struct logger_opts logger_opts_t;
+typedef struct logger_output logger_output_t;
+
+struct logger_output;
 
 struct logger_opts {
     /* maximum number of characters per line
      * after that, wrap around */
     size_t linewidth;
 
-    struct logger_target * targets;
+    size_t numoutputs;
+    logger_output_t * outputs;
 };
 
 
 struct logger {
     char * identifier;
+    char * prefix;
 
     mtx_t lock;
 
@@ -64,9 +70,6 @@ struct logger_output {
 };
 
 
-typedef struct logger logger_t;
-typedef struct logger_opts logger_opts_t;
-typedef struct logger_output logger_output_t;
 
 
 /* TODO this *will* break ABI if logger_opts_t is ever changed, should provide alternative interface someday in the future */
@@ -105,4 +108,6 @@ extern void         logger_set_default_opts(logger_opts_t const [const static 1]
 
 extern size_t       logger_num_targets(logger_t const * const);
 
+extern logger_opts_t const *
+                    logger_opts_defaults();
 

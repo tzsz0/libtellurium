@@ -50,10 +50,11 @@ static char * *     split_line_at(char const * const, size_t);
 static logger_opts_t defaults = {
     /* TODO */
     .linewidth = 80,
-    .targets = (struct logger_target[]) {
+    /* TODO get proper defaults */
+    .numoutputs = 1,
+    .outputs = (logger_output_t[]) {
         { .colors=true,
         },
-        NULL /* NULL to struct logger_target is bad behaviour in arrays... */
     }
 };
 
@@ -144,6 +145,10 @@ logger_close(logger_t * const logger)
     free(logger->identifier);
     mtx_destroy(&logger->lock);
 
+    for(size_t i = 0; i < logger->opts.numoutputs; i++) {
+        logger->opts.outputs[i].close(&logger->opts.outputs[i].workingdata);
+    }
+
     /* TODO remove connection with children and parents */
 
     logger_remove(logger);
@@ -175,6 +180,10 @@ logger_get(char const * const id, logger_opts_t const * const opts)
             logger_init(ret, 0, id);
             /* TODO use opts */
             memcpy(&ret->opts, opts, sizeof ret->opts);
+            /* TODO move this somewhere else */
+            for(size_t i = 0; i < opts->numoutputs; i++) {
+                opts->outputs[i].open(&opts->outputs[i].workingdata);
+            }
         }
     }
     mtx_unlock(&loggers_lock);
@@ -190,6 +199,13 @@ size_t
 logger_num_targets(logger_t const logger[const static 1])
 {
     return 0;
+}
+
+
+logger_opts_t const *
+logger_opts_defaults()
+{
+    return &defaults;
 }
 
 
@@ -228,10 +244,17 @@ logger_link(logger_t * const child, logger_t * const parent)
 
 
 logger_t *
-logger_get_prefix_loggers(logger_t const logger[const static 1])
+logger_set_prefix(logger_t logger[const static 1], char const * const newprefix)
 {
-
+    char * copied = strdup(newprefix);
+    logger->prefix = copied;
     return NULL;
+}
+
+char const *
+logger_get_prefix(logger_t const * const logger)
+{
+    return logger->prefix;
 }
 
 
@@ -248,12 +271,22 @@ logger_write(logger_t * const logger, enum logger_level level, char const * cons
 void
 logger_vwrite(logger_t * const logger, enum logger_level level, char const * const msg, va_list args)
 {
-
-    char * * substr = split_line_at(msg, logger->opts.linewidth);
+    /* TODO reenable line splitting after some testing */
+    //char * * substr = split_line_at(msg, logger->opts.linewidth);
 
     /* broadcast all messages to all parent loggers */
-    for(size_t i = 0; i < logger->parents.num; i++) {
-        logger_vwrite(logger->parents.loggers + i, level, msg, args);
+    //for(size_t i = 0; i < logger->parents.num; i++) {
+    //    logger_vwrite(logger->parents.loggers + i, level, msg, args);
+    //}
+
+    size_t const len = vsnprintf(NULL, 0, msg, args) + 1;
+    char line[len]; /* TODO this should be moved to the heap later on */
+    memset(line, '\0', len);
+    vsnprintf(line, len, msg, args);
+    
+    for(size_t i = 0; i < logger->opts.numoutputs; i++) {
+        logger_output_t out = logger->opts.outputs[i];
+        out.write(&out.workingdata, level, line);
     }
     
 }
@@ -282,6 +315,16 @@ split_line_at(char const * const line, size_t maxlength)
     }
 
     return substr;
+}
+
+
+void
+logger_info(logger_t * const logger, char const * const msg, ...)
+{
+    va_list args;
+    va_start(args, msg);
+    logger_vwrite(logger, LOGGER_INFO, msg, args);
+    va_end(args);
 }
 
 
