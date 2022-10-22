@@ -14,6 +14,7 @@ enum logger_level {
     LOGGER_WARN,
     LOGGER_ERROR,
     LOGGER_FATAL,
+    LOGGER_LEVEL_MAX
 };
 
 
@@ -53,6 +54,12 @@ struct logger {
 struct logger_output {
 
     bool colors;
+
+    void * workingdata;
+
+    bool (*open)(void * *);
+    bool (*write)(void * *, enum logger_level, char *);
+    bool (*close)(void * *);
 
 };
 
