@@ -36,6 +36,7 @@ struct logger_opts {
 struct logger {
     char * identifier;
     char * prefix;
+    char * timeformat;
 
     mtx_t lock;
 

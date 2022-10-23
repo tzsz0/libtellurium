@@ -150,6 +150,8 @@ logger_close(logger_t * const logger)
         logger->opts.outputs[i].close(&logger->opts.outputs[i].workingdata);
     }
 
+    free(logger->prefix);
+
     /* TODO remove connection with children and parents */
 
     logger_remove(logger);
@@ -247,8 +249,14 @@ logger_link(logger_t * const child, logger_t * const parent)
 bool
 logger_set_prefix(logger_t logger[const static 1], char const * const newprefix)
 {
+    if(newprefix == NULL) {
+        free(logger->prefix);
+        logger->prefix = NULL;
+        return true;
+    }
     char * copied = strdup(newprefix);
     if(copied != NULL) {
+        free(logger->prefix);
         logger->prefix = copied;
         return true;
     } else {
@@ -259,7 +267,11 @@ logger_set_prefix(logger_t logger[const static 1], char const * const newprefix)
 char const *
 logger_get_prefix(logger_t const * const logger)
 {
-    return strdup(logger->prefix);
+    if(logger->prefix != NULL) {
+        return strdup(logger->prefix);
+    } else {
+        return NULL;
+    }
 }
 
 
@@ -311,9 +323,11 @@ logger_vwrite(logger_t * const logger, enum logger_level level, char const * con
 
     char * timestr = format_time("%D %T");
 
-    size_t lendate = snprintf(NULL, 0, "[%s] %s\n", timestr, line);
+    char const * prefix = logger_get_prefix(logger);
+
+    size_t lendate = snprintf(NULL, 0, "[%s][%s] %s\n", prefix ?: "", timestr, line);
     char withdate[lendate];
-    snprintf(withdate, lendate, "[%s] %s\n", timestr, line);
+    snprintf(withdate, lendate, "[%s][%s] %s\n", prefix ?: "", timestr, line);
 
     free(timestr);
     

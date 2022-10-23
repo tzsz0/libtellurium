@@ -10,7 +10,10 @@ int main()
         .outputs = &logger_file_default
     };
     logger_t * log = logger_get("a new start", &defaults);
+    logger_set_prefix(log, "basic");
     logger_info(log, "Hello World!\n");
+
+    logger_close_all();
 
     return EXIT_SUCCESS;
 }
