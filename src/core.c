@@ -296,6 +296,13 @@ format_time(char const * const formatstr)
     }
 }
 
+static char const * const
+level_to_str(enum logger_level level)
+{
+    if(level <= 0 || level >= LOGGER_LEVEL_MAX) return "LEVEL INVALID";
+    else return (char * []) {"nolevel", "INFO"}[level];
+}
+
 void
 logger_write(logger_t * const logger, enum logger_level level, char const * const msg, ...)
 {
@@ -324,10 +331,11 @@ logger_vwrite(logger_t * const logger, enum logger_level level, char const * con
     char * timestr = format_time("%D %T");
 
     char const * prefix = logger_get_prefix(logger);
+    char const * const levelstr = level_to_str(level);
 
-    size_t lendate = snprintf(NULL, 0, "[%s][%s] %s\n", prefix ?: "", timestr, line);
+    size_t lendate = snprintf(NULL, 0, "[%s][%s][%s] %s\n", levelstr, prefix ?: "", timestr, line);
     char withdate[lendate];
-    snprintf(withdate, lendate, "[%s][%s] %s\n", prefix ?: "", timestr, line);
+    snprintf(withdate, lendate, "[%s][%s][%s] %s\n", levelstr, prefix ?: "", timestr, line);
 
     free(timestr);
     
