@@ -263,6 +263,26 @@ logger_get_prefix(logger_t const * const logger)
 }
 
 
+static char *
+format_time(char const * const formatstr)
+{
+    /* strftime ffs does *NOT* return the lengths it *WOULD* need if called with NULL,0
+     * this is pissing me off bc I now have to estimate the number of chars needed
+     * for that reason we might make a preprocessor macro out of this. */
+    size_t const MAX_TIMESTAMP_SIZE = 100;
+    struct timespec now;
+    timespec_get(&now, TIME_UTC); /* TODO adjust for local time */
+
+    /* TODO move this out of here so not every logger call has to allocate this */
+    char * timebuff = calloc(MAX_TIMESTAMP_SIZE, sizeof *timebuff);
+
+    if(timebuff != NULL) {
+        strftime(timebuff, MAX_TIMESTAMP_SIZE, formatstr, gmtime(&now.tv_sec));
+        return timebuff;
+    } else {
+        return NULL;
+    }
+}
 
 void
 logger_write(logger_t * const logger, enum logger_level level, char const * const msg, ...)
@@ -289,16 +309,13 @@ logger_vwrite(logger_t * const logger, enum logger_level level, char const * con
     memset(line, '\0', len);
     vsnprintf(line, len, msg, args);
 
-    /* TODO urgent cleanup */
-    struct timespec now;
-    timespec_get(&now, TIME_UTC); /* TODO adjust for local time */
-    char timebuff[100]; /* TODO no no */
-    strftime(timebuff, sizeof timebuff, "%D %T", gmtime(&now.tv_sec));
+    char * timestr = format_time("%D %T");
 
-    size_t lendate = snprintf(NULL, 0, "[%s] %s\n", timebuff, line);
+    size_t lendate = snprintf(NULL, 0, "[%s] %s\n", timestr, line);
     char withdate[lendate];
-    snprintf(withdate, lendate, "[%s] %s\n", timebuff, line);
+    snprintf(withdate, lendate, "[%s] %s\n", timestr, line);
 
+    free(timestr);
     
     for(size_t i = 0; i < logger->opts.numoutputs; i++) {
         logger_output_t out = logger->opts.outputs[i];
