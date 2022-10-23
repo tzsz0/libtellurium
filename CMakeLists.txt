@@ -27,3 +27,9 @@ target_link_libraries(tellurium PRIVATE termcolors)
 
 
 
+# very basic testing (for now, later something else)
+
+add_executable(telluriumtest test/basic.c)
+target_link_libraries(telluriumtest tellurium)
+
+
