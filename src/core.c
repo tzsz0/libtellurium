@@ -5,6 +5,7 @@
 #include<threads.h>
 #include<string.h>
 #include<stdlib.h>
+#include<time.h>
 
 
 /* we hand out pointers to logger_t via our API.
@@ -283,10 +284,21 @@ logger_vwrite(logger_t * const logger, enum logger_level level, char const * con
     char line[len]; /* TODO this should be moved to the heap later on */
     memset(line, '\0', len);
     vsnprintf(line, len, msg, args);
+
+    /* TODO urgent cleanup */
+    struct timespec now;
+    timespec_get(&now, TIME_UTC); /* TODO adjust for local time */
+    char timebuff[100]; /* TODO no no */
+    strftime(timebuff, sizeof timebuff, "%D %T", gmtime(&now.tv_sec));
+
+    size_t lendate = snprintf(NULL, 0, "[%s] %s\n", timebuff, line);
+    char withdate[lendate];
+    snprintf(withdate, lendate, "[%s] %s\n", timebuff, line);
+
     
     for(size_t i = 0; i < logger->opts.numoutputs; i++) {
         logger_output_t out = logger->opts.outputs[i];
-        out.write(&out.workingdata, level, line);
+        out.write(&out.workingdata, level, withdate);
     }
     
 }
