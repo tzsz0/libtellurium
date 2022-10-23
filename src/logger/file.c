@@ -1,12 +1,30 @@
 #include<logger.h>
 #include<stdio.h>
+#ifdef __unix__
+    #include<unistd.h>
+#else
+    #include<io.h>
+#endif
 
 
+static bool
+file_exists(char * filename)
+{
+#ifdef __unix__
+    return access(filename, W_OK) == 0;
+#else
+    return _access(filename, F_OK) ==0;
+#endif
+}
 
 static bool
 file_open(void * * data)
 {
-    *(FILE * *)data = fopen("file.log", "a"); /* TODO pass filename to open handler */
+    char * fname = "file.log";
+    if(file_exists(fname)) {
+        /* noop for now */
+    }
+    *(FILE * *)data = fopen(fname, "a"); /* TODO pass filename to open handler */
     return *data != NULL;
 }
 
