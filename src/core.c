@@ -244,18 +244,22 @@ logger_link(logger_t * const child, logger_t * const parent)
 
 
 
-logger_t *
+bool
 logger_set_prefix(logger_t logger[const static 1], char const * const newprefix)
 {
     char * copied = strdup(newprefix);
-    logger->prefix = copied;
-    return NULL;
+    if(copied != NULL) {
+        logger->prefix = copied;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 char const *
 logger_get_prefix(logger_t const * const logger)
 {
-    return logger->prefix;
+    return strdup(logger->prefix);
 }
 
 
