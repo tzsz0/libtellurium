@@ -17,8 +17,10 @@ set_target_properties(tellurium PROPERTIES PUBLIC_HEADER include/tellurium.h)
 target_include_directories(tellurium PUBLIC include)
 target_include_directories(tellurium PRIVATE src)
 
-
-add_subdirectory(contrib/safestringlib)
+find_package(safestringlib COMPONENTS system filesystem)
+if(NOT safestringlib_FOUND)
+    add_subdirectory(contrib/safestringlib)
+endif()
 add_subdirectory(contrib/libtermcolor)
 
 
