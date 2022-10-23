@@ -36,6 +36,7 @@ struct logger_opts {
 struct logger {
     char * identifier;
     char * prefix;
+    char * formatstring;
     char * timeformat;
 
     mtx_t lock;
@@ -86,6 +87,7 @@ extern void         logger_write(logger_t * const, enum logger_level, char const
 
 extern void         logger_vwrite(logger_t * const, enum logger_level, char const * const,  va_list);
 
+
 extern void         logger_info(logger_t * const, char const * const, ...);
 
 
@@ -108,6 +110,7 @@ extern void         logger_set_default_opts(logger_opts_t const [const static 1]
 
 
 extern size_t       logger_num_targets(logger_t const * const);
+
 
 extern logger_opts_t const *
                     logger_opts_defaults();

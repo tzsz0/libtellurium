@@ -383,3 +383,34 @@ logger_info(logger_t * const logger, char const * const msg, ...)
 }
 
 
+void
+logger_warn(logger_t * const logger, char const * const msg, ...)
+{
+    va_list args;
+    va_start(args, msg);
+    logger_vwrite(logger, LOGGER_WARN, msg, args);
+    va_end(args);
+}
+
+
+void
+logger_error(logger_t * const logger, char const * const msg, ...)
+{
+    va_list args;
+    va_start(args, msg);
+    logger_vwrite(logger, LOGGER_ERROR, msg, args);
+    va_end(args);
+}
+
+
+void
+logger_fatal(logger_t * const logger, char const * const msg, ...)
+{
+    va_list args;
+    va_start(args, msg);
+    logger_vwrite(logger, LOGGER_FATAL, msg, args);
+    va_end(args);
+}
+
+
+
