@@ -12,7 +12,10 @@ int main()
     };
     logger_t * log = logger_get("a new start", &defaults);
     logger_set_prefix(log, "basic");
+
     logger_info(log, "This works nicely! :)\n");
+    logger_warn(log, "hey, listen.\n");
+    logger_fatal(log, "i can't :(\n");
 
     logger_close_all();
 
